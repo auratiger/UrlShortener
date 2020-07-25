@@ -32,4 +32,9 @@ public class UrlServiceImpl implements UrlService{
     public void deleteShort(String id) {
         urlRepository.deleteById(id);
     }
+
+    @Override
+    public boolean existsUrlBySlug(String slug) {
+        return urlRepository.existsUrlBySlug(slug);
+    }
 }

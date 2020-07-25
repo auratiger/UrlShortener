@@ -9,4 +9,5 @@ public interface UrlService {
     Url findBySlug(String slug);
     void saveOrUpdateUrl(Url url);
     void deleteShort(String id);
+    boolean existsUrlBySlug(String slug);
 }

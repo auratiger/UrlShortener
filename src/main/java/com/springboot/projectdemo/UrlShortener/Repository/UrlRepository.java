@@ -5,4 +5,5 @@ import org.springframework.data.mongodb.repository.MongoRepository;
 
 public interface UrlRepository extends MongoRepository<Url, String> {
     Url findBySlug(String slug);
+    boolean existsUrlBySlug(String slug);
 }

@@ -1,6 +1,7 @@
 package com.springboot.projectdemo.UrlShortener.models;
 
 import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.util.Date;
@@ -11,6 +12,7 @@ public class Url {
     @Id
     private String id;
 
+    @Indexed(unique = true)
     private String slug;
     private String url;
 
