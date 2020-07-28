@@ -5,7 +5,9 @@ import com.springboot.projectdemo.UrlShortener.models.Url;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class UrlServiceImpl implements UrlService{
@@ -19,7 +21,7 @@ public class UrlServiceImpl implements UrlService{
     }
 
     @Override
-    public Url findBySlug(String slug) {
+    public Optional<Url> findBySlug(String slug) {
         return urlRepository.findBySlug(slug);
     }
 

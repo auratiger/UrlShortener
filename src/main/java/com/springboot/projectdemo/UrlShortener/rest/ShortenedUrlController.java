@@ -9,13 +9,18 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.view.RedirectView;
 
+import java.util.Optional;
+
 @RestController
 public class ShortenedUrlController {
 
-    @Autowired
-    private UrlService urlService;
+    private final UrlService urlService;
 
-    @PostMapping(value = "/url")
+    public ShortenedUrlController(UrlService urlService) {
+        this.urlService = urlService;
+    }
+
+    @PostMapping(value = "/urls")
     public ResponseEntity<?> saveOrUpdateUrl(@RequestBody Url url){
         //Throw Error if the url is the same as the domain
         String slug = url.getSlug();
@@ -32,19 +37,35 @@ public class ShortenedUrlController {
         }else{
             if(urlService.existsUrlBySlug(slug)){
 //                throw new IllegalArgumentException("Specified slug is already in use.");
-                return new ResponseEntity<>("Specified slug is already in use.", HttpStatus.CONFLICT);
+                return new ResponseEntity<>("Specified slug is already in use.", HttpStatus.BAD_REQUEST);
             }
 
             urlService.saveOrUpdateUrl(url);
         }
 
-        return new ResponseEntity<>("Url added successfully", HttpStatus.OK);
+        return new ResponseEntity<>("Url added successfully", HttpStatus.CREATED);
     }
 
-    @GetMapping(value = "/{id}")
-    public RedirectView redirectUrl(@PathVariable String id){
+    @GetMapping(value = "/urls/{slug}")
+    public RedirectView redirectUrl(@PathVariable String slug){
 
-        return new RedirectView("");
+        Optional<Url> url = urlService.findBySlug(slug);
+
+        return url.map(value -> new RedirectView(value.getUrl()))
+                .orElse(new RedirectView("http://localhost:8081"));
+    }
+
+    @GetMapping(value = "/urls/abs/{slug}")
+    public ResponseEntity<String> getUrl(@PathVariable String slug){
+        Optional<Url> url = urlService.findBySlug(slug);
+
+        return url.map(value -> ResponseEntity.ok().body(value.getUrl()))
+                .orElse(ResponseEntity.badRequest().body("Url does not exist."));
+    }
+
+    @GetMapping(value = "/hello")
+    public ResponseEntity<String> hello(){
+        return new ResponseEntity<>("Hello", HttpStatus.BAD_REQUEST);
     }
 
 }

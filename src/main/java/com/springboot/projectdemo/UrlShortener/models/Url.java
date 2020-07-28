@@ -18,6 +18,9 @@ public class Url {
 
     private long timestamp;
 
+    public Url() {
+    }
+
     public Url(String slug, String url) {
         this.slug = slug;
         this.url = url;
@@ -54,5 +57,13 @@ public class Url {
 
     public void setTimestamp(long timestamp) {
         this.timestamp = timestamp;
+    }
+
+    @Override
+    public String toString() {
+        return "{ " +
+                "\"slug\":\"" + slug + '\"' +
+                ", \"url\":\"" + url + '\"' +
+                " }";
     }
 }
