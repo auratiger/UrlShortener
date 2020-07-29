@@ -39,4 +39,9 @@ public class UrlServiceImpl implements UrlService{
     public boolean existsUrlBySlug(String slug) {
         return urlRepository.existsUrlBySlug(slug);
     }
+
+    @Override
+    public long deleteUrlBySlug(String slug) {
+        return urlRepository.deleteUrlBySlug(slug);
+    }
 }

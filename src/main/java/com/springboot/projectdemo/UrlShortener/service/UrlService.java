@@ -10,5 +10,6 @@ public interface UrlService {
     Optional<Url> findBySlug(String slug);
     void saveOrUpdateUrl(Url url);
     void deleteShort(String id);
+    long deleteUrlBySlug(String slug);
     boolean existsUrlBySlug(String slug);
 }

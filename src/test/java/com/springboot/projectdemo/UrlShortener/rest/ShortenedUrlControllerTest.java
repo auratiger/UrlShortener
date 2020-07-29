@@ -44,9 +44,7 @@ class ShortenedUrlControllerTest {
 	@Test
 	public void shouldCreateProduct() throws Exception{
 		String uri = "/url";
-		Url url = new Url();
-		url.setSlug("test");
-		url.setUrl("https://www.tutorialspoint.com/spring_boot/spring_boot_rest_controller_unit_test.htm");
+		Url url = new Url("test", "https://www.tutorialspoint.com/spring_boot/spring_boot_rest_controller_unit_test.htm");
 
 		mockMvc.perform(post(uri)
 						.contentType(MediaType.APPLICATION_JSON)

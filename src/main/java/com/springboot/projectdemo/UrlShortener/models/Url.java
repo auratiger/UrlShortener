@@ -18,9 +18,6 @@ public class Url {
 
     private long timestamp;
 
-    public Url() {
-    }
-
     public Url(String slug, String url) {
         this.slug = slug;
         this.url = url;

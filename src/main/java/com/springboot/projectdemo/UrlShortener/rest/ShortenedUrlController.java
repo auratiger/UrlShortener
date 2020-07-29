@@ -12,6 +12,7 @@ import org.springframework.web.servlet.view.RedirectView;
 import java.util.Optional;
 
 @RestController
+@CrossOrigin
 public class ShortenedUrlController {
 
     private final UrlService urlService;
@@ -63,9 +64,27 @@ public class ShortenedUrlController {
                 .orElse(ResponseEntity.badRequest().body("Url does not exist."));
     }
 
-    @GetMapping(value = "/hello")
-    public ResponseEntity<String> hello(){
-        return new ResponseEntity<>("Hello", HttpStatus.BAD_REQUEST);
+    @DeleteMapping(value = "/urls/delete/{slug}")
+    public ResponseEntity<String> deleteBySlug(@PathVariable String slug){
+
+        long result = urlService.deleteUrlBySlug(slug);
+
+        return result == 1 ? ResponseEntity.ok().body("Url with slug " + slug + " deleted successfully.") :
+                ResponseEntity.badRequest().body("No such item exists.");
     }
 
+    @PutMapping(value = "urls/update/{slug}")
+    public ResponseEntity<String> updateUrl(@RequestBody Url newUrl,@PathVariable String slug){
+        Optional<Url> url = urlService.findBySlug(slug);
+
+        if(url.isPresent()) {
+            Url modifiedUrl = url.get();
+            modifiedUrl.setSlug(newUrl.getSlug());
+            modifiedUrl.setUrl(newUrl.getUrl());
+            urlService.saveOrUpdateUrl(modifiedUrl);
+            return ResponseEntity.ok().body("Update successful");
+        }
+
+        return ResponseEntity.badRequest().body("No such item exists.");
+    }
 }

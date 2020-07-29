@@ -8,4 +8,6 @@ import java.util.Optional;
 public interface UrlRepository extends MongoRepository<Url, String> {
     Optional<Url> findBySlug(String slug);
     boolean existsUrlBySlug(String slug);
+    long deleteUrlBySlug(String slug);
+
 }
