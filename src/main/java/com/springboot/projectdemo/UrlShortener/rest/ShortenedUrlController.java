@@ -73,7 +73,7 @@ public class ShortenedUrlController {
                 ResponseEntity.badRequest().body("No such item exists.");
     }
 
-    @PutMapping(value = "urls/update/{slug}")
+    @PutMapping(value = "/urls/update/{slug}")
     public ResponseEntity<String> updateUrl(@RequestBody Url newUrl,@PathVariable String slug){
         Optional<Url> url = urlService.findBySlug(slug);
 
@@ -86,5 +86,10 @@ public class ShortenedUrlController {
         }
 
         return ResponseEntity.badRequest().body("No such item exists.");
+    }
+
+    @GetMapping(value = "/hello")
+    public String hello(){
+        return "Hello";
     }
 }

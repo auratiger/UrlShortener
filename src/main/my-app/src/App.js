@@ -1,9 +1,28 @@
 import React, {useState} from 'react';
 import './App.css';
+import TextField from '@material-ui/core/TextField';
+import Button from '@material-ui/core/Button';
+import { makeStyles } from '@material-ui/core/styles';
+import Paper from '@material-ui/core/Paper';
 
 import axios from 'axios'
 
+const useStyles = makeStyles({
+  root: {
+    width: 250,
+    height: 180,
+    display: "inline-block"
+  },
+  result: {
+    width: 250,
+    height: 180,
+    display: "inline-block"
+  },
+});
+
 function App() {
+
+  const classes = useStyles();
 
   const [slug, setSlug] = useState("");
   const [url, setUrl] = useState("");
@@ -11,8 +30,10 @@ function App() {
   const handleSubmit = event => {
     event.preventDefault();
 
-    console.log(slug);
-    console.log(url);
+    if(url.length < 1){
+      console.log("url is empty");
+      return;
+    }
 
     let obj = {
       "slug": slug,
@@ -23,6 +44,9 @@ function App() {
       .then((response) => {
         console.log(response.data);
       });
+      
+    setSlug(""); 
+    setUrl("");
   }
 
   const onSlugChangeHandler = (event) => {
@@ -36,21 +60,20 @@ function App() {
   return (
     <div className="App">
 
-      <h1>Hello</h1>
+      <h1>Url shortener</h1>
 
-      <form onSubmit={handleSubmit}>
-        <label>
-          Slug:
-          <input type="text" value={slug} onChange={onSlugChangeHandler} />
-        </label>
-        <br/>
-        <label>
-          Url:
-          <input type="text" value={url} onChange={onUrlChangeHandler} />
-        </label>
-        <br/>
-        <input type="submit" value="Submit" />
-      </form>
+      <Paper className={classes.root}>
+          <form>
+            <div>
+              <TextField label={"Slug"} value={slug} onChange={onSlugChangeHandler} />
+            </div>
+            <div>
+              <TextField label={"Url"} value={url} onChange={onUrlChangeHandler} />
+            </div>
+            <br/>
+            <Button onClick={handleSubmit} variant="contained">Submit</Button>
+          </form>
+      </Paper>
 
     </div>
   );
