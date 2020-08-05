@@ -14,7 +14,6 @@ import org.springframework.test.context.junit4.SpringRunner;
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest
-@AutoConfigureMockMvc
 class UrlShortenerApplicationTests {
 
 	@Autowired

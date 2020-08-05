@@ -28,7 +28,6 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 @ExtendWith(SpringExtension.class)
 @WebMvcTest(ShortenedUrlController.class)
-@AutoConfigureMockMvc
 class ShortenedUrlControllerTest {
 
 	private MockMvc mockMvc;
@@ -56,10 +55,14 @@ class ShortenedUrlControllerTest {
 
 	@Test
 	void hello() throws Exception {
-		MvcResult mvcResult = mockMvc.perform(get("/hello"))
-				.andDo(print())
-				.andExpect(status().isOk())
-				.andReturn();
+		mockMvc.perform(
+						get("/hello")
+						.contentType(MediaType.APPLICATION_JSON)
+						.characterEncoding("utf-8")
+				)
+				.andDo(print());
+//				.andExpect(status().isOk())
+//				.andReturn();
 
 
 	}

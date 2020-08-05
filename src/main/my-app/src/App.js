@@ -1,24 +1,37 @@
 import React, {useState} from 'react';
 import './App.css';
+import { makeStyles } from '@material-ui/core/styles';
 import TextField from '@material-ui/core/TextField';
 import Button from '@material-ui/core/Button';
-import { makeStyles } from '@material-ui/core/styles';
 import Paper from '@material-ui/core/Paper';
+import Grid from '@material-ui/core/Grid';
+import Snackbar from '@material-ui/core/Snackbar';
+import MuiAlert from '@material-ui/lab/Alert';
 
 import axios from 'axios'
 
-const useStyles = makeStyles({
+const useStyles = makeStyles((theme) => ({
   root: {
-    width: 250,
-    height: 180,
-    display: "inline-block"
+    flexGrow: 1,
   },
-  result: {
-    width: 250,
-    height: 180,
-    display: "inline-block"
+  paper: {
+    padding: theme.spacing(2),
+    textAlign: 'center',
+    color: theme.palette.text.secondary,
   },
-});
+}));
+
+function Alert(props){
+
+  let text = `Slug: ${props.response.slug} \n
+   Url: ${props.response.url}` 
+
+  return (
+    <MuiAlert elevation={6} variant="filled" {...props}>
+      {text}
+    </MuiAlert>
+  )
+}
 
 function App() {
 
@@ -26,6 +39,8 @@ function App() {
 
   const [slug, setSlug] = useState("");
   const [url, setUrl] = useState("");
+  const [open, setOpen] = useState(false);
+  const [response, setResponse] = useState({})
 
   const handleSubmit = event => {
     event.preventDefault();
@@ -42,11 +57,13 @@ function App() {
 
     axios.post('http://localhost:8081/urls', obj)
       .then((response) => {
-        console.log(response.data);
+        // console.log(response.data);
+        setResponse(response.data);
       });
       
-    setSlug(""); 
-    setUrl("");
+    setOpen(true);
+    setSlug("")
+    setUrl("")
   }
 
   const onSlugChangeHandler = (event) => {
@@ -56,25 +73,43 @@ function App() {
   const onUrlChangeHandler = (event) => {
     setUrl(event.target.value);
   }
+  
+  const handleClose = (event, reason) => {
+    if (reason === 'clickaway') {
+      return;
+    }
+
+    setOpen(false);
+  };
 
   return (
-    <div className="App">
-
-      <h1>Url shortener</h1>
-
-      <Paper className={classes.root}>
-          <form>
-            <div>
-              <TextField label={"Slug"} value={slug} onChange={onSlugChangeHandler} />
-            </div>
-            <div>
-              <TextField label={"Url"} value={url} onChange={onUrlChangeHandler} />
-            </div>
-            <br/>
-            <Button onClick={handleSubmit} variant="contained">Submit</Button>
-          </form>
-      </Paper>
-
+    <div className={classes.root}>
+      <Grid container spacing={3}>
+        <Grid item xs={12}>
+          <h1 className={classes.paper}>Url shortener</h1>
+        </Grid>
+        <Grid item xs={4}></Grid>
+        <Grid item xs={4}>
+          <Paper className={classes.paper}>
+              <form>
+                <div>
+                  <TextField label={"Slug"} value={slug} onChange={onSlugChangeHandler} />
+                </div>
+                <div>
+                  <TextField label={"Url"} value={url} onChange={onUrlChangeHandler} />
+                </div>
+                <br/>
+                <Button onClick={handleSubmit} variant="contained">Submit</Button>
+              </form>
+          </Paper>
+        </Grid>
+        <Snackbar
+          anchorOrigin={{vertical: "bottom", horizontal: "center"}}
+          open={open}
+          onClose={handleClose}>
+            <Alert onClose={handleClose} severity="success" response={response}/>
+        </Snackbar>
+      </Grid>
     </div>
   );
 }

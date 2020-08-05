@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.view.RedirectView;
 
 import java.util.Optional;
+import java.util.Random;
 
 @RestController
 @CrossOrigin
@@ -26,14 +27,20 @@ public class ShortenedUrlController {
         //Throw Error if the url is the same as the domain
         String slug = url.getSlug();
 
-        if(slug == null){
+        if(slug.trim().equals("")){
+            int max = 25;
+            int min = 1;
+            int range = max - min + 1;
+
             do {
+                int size = (int)(Math.random() * range + min);
                 url.setSlug(NanoIdUtils.randomNanoId(
                         NanoIdUtils.DEFAULT_NUMBER_GENERATOR,
                         NanoIdUtils.DEFAULT_ALPHABET,
-                        5));
+                        size));
             }while(urlService.existsUrlBySlug(url.getSlug()));
 
+            System.out.println(url);
             urlService.saveOrUpdateUrl(url);
         }else{
             if(urlService.existsUrlBySlug(slug)){
@@ -44,7 +51,7 @@ public class ShortenedUrlController {
             urlService.saveOrUpdateUrl(url);
         }
 
-        return new ResponseEntity<>("Url added successfully", HttpStatus.CREATED);
+        return new ResponseEntity<>(url, HttpStatus.CREATED);
     }
 
     @GetMapping(value = "/urls/{slug}")
@@ -89,7 +96,8 @@ public class ShortenedUrlController {
     }
 
     @GetMapping(value = "/hello")
-    public String hello(){
-        return "Hello";
+    public ResponseEntity<String> asdtest(){
+        System.out.println("MAMA TI HUBAVA");
+        return ResponseEntity.status(404).body("hello");
     }
 }
