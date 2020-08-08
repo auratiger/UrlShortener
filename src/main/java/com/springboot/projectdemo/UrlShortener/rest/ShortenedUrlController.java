@@ -28,7 +28,7 @@ public class ShortenedUrlController {
         String slug = url.getSlug();
 
         if(slug.trim().equals("")){
-            int max = 25;
+            int max = 15;
             int min = 1;
             int range = max - min + 1;
 
