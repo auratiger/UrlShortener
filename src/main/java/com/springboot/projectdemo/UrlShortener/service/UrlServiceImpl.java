@@ -1,8 +1,10 @@
 package com.springboot.projectdemo.UrlShortener.service;
 
+import com.mongodb.MongoWriteException;
 import com.springboot.projectdemo.UrlShortener.Repository.UrlRepository;
 import com.springboot.projectdemo.UrlShortener.models.Url;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
 
 
@@ -26,8 +28,15 @@ public class UrlServiceImpl implements UrlService{
     }
 
     @Override
-    public void saveOrUpdateUrl(Url url) {
-        urlRepository.save(url);
+    public boolean saveOrUpdateUrl(Url url) {
+        try {
+            urlRepository.save(url);
+        }catch (DuplicateKeyException | MongoWriteException e){
+//            e.printStackTrace();
+            //TODO: Log to file
+            return false;
+        }
+        return true;
     }
 
     @Override

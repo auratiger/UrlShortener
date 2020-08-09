@@ -106,7 +106,7 @@ const SignUp = (props) => {
     
     return(
         <div className={classes.root}>
-            <h1>Sign Up</h1>
+            <h1>Register Organization</h1>
             <form onSubmit={handleSubmit}>
                 <Grid container spacing={1}>
                     <Grid item xs={12}>

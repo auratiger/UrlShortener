@@ -8,7 +8,7 @@ import java.util.Optional;
 
 public interface OrganizationService {
     List<Organization> findAll();
-    void saveOrUpdateOrganization(Organization organization);
+    boolean saveOrUpdateOrganization(Organization organization);
     Optional<Organization> findByName(String name);
     boolean existsOrganizationByName(String name);
     long deleteOrganizationByName(String name);
@@ -19,5 +19,6 @@ public interface OrganizationService {
     boolean existsOrganizationByNamespace(String namespace);
     long deleteOrganizationByNamespace(String namespace);
 
-    Optional<Url> findByNamespaceAndUrlsSSlug(String namespace, String slug);
+    Optional<Url> findUrlByNamespaceAndSlug(String namespace, String slug);
+    Optional<Organization> findOrganizationByNamespaceAndSlug(String namespace, String slug);
 }

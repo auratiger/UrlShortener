@@ -34,14 +34,15 @@ const ButtonAppBar = (props) => {
 
                 <Button className={classes.menuButton} 
                         color="secondary" 
-                        variant="contained">
-                            Redirect To
+                        variant="contained"
+                        onClick={() => {props.history.push("/redirectPage")}}>
+                            Redirect me
                 </Button>
 
                 <Button className={classes.menuButton} 
                         color="secondary" 
                         variant="contained"
-                        onClick={() => {props.history.push("/auth/signup")}}>
+                        onClick={() => {props.history.push("/auth/login")}}>
                             Login
                 </Button>
             </Toolbar>

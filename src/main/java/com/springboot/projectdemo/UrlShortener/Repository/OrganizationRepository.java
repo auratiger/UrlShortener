@@ -21,4 +21,6 @@ public interface OrganizationRepository extends MongoRepository<Organization, St
     @Query(value = "{ 'namespace' : ?0, 'urls.slug' : ?1 }")
     List<Organization> findByNamespaceAndUrlsSSlug(String namespace, String slug);
 
+
+
 }

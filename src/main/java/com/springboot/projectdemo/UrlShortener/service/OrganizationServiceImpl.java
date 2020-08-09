@@ -1,9 +1,11 @@
 package com.springboot.projectdemo.UrlShortener.service;
 
+import com.mongodb.MongoWriteException;
 import com.springboot.projectdemo.UrlShortener.Repository.OrganizationRepository;
 import com.springboot.projectdemo.UrlShortener.models.Organization;
 import com.springboot.projectdemo.UrlShortener.models.Url;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -21,8 +23,15 @@ public class OrganizationServiceImpl implements OrganizationService {
     }
 
     @Override
-    public void saveOrUpdateOrganization(Organization organization) {
-        organizationRepository.save(organization);
+    public boolean saveOrUpdateOrganization(Organization organization) {
+        try {
+            organizationRepository.save(organization);
+        }catch (DuplicateKeyException | MongoWriteException e){
+            e.printStackTrace();
+            //TODO: Log to file
+            return false;
+        }
+        return true;
     }
 
     @Override
@@ -71,7 +80,7 @@ public class OrganizationServiceImpl implements OrganizationService {
     }
 
     @Override
-    public Optional<Url> findByNamespaceAndUrlsSSlug(String namespace, String slug) {
+    public Optional<Url> findUrlByNamespaceAndSlug(String namespace, String slug) {
 
         List<Organization> results = organizationRepository.findByNamespaceAndUrlsSSlug(namespace, slug);
         Url url = null;
@@ -81,5 +90,17 @@ public class OrganizationServiceImpl implements OrganizationService {
         }
 
         return Optional.ofNullable(url);
+    }
+
+    @Override
+    public Optional<Organization> findOrganizationByNamespaceAndSlug(String namespace, String slug) {
+
+        List<Organization> results = organizationRepository.findByNamespaceAndUrlsSSlug(namespace, slug);
+
+        for(Organization organization : results){
+            return Optional.of(organization);
+        }
+
+        return Optional.empty();
     }
 }

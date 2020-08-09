@@ -3,14 +3,13 @@ package com.springboot.projectdemo.UrlShortener.rest;
 import com.aventrix.jnanoid.jnanoid.NanoIdUtils;
 import com.springboot.projectdemo.UrlShortener.models.Url;
 import com.springboot.projectdemo.UrlShortener.service.UrlService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.view.RedirectView;
 
+import java.util.List;
 import java.util.Optional;
-import java.util.Random;
 
 @RestController
 @CrossOrigin
@@ -23,11 +22,11 @@ public class ShortenedUrlController {
     }
 
     @PostMapping(value = "/urls")
-    public ResponseEntity<?> saveOrUpdateUrl(@RequestBody Url url){
+    public ResponseEntity<?> createUrl(@RequestBody Url url){
         //Throw Error if the url is the same as the domain
         String slug = url.getSlug();
 
-        if(slug.trim().equals("")){
+        if(slug == null || slug.trim().equals("")){
             int max = 15;
             int min = 1;
             int range = max - min + 1;
@@ -38,23 +37,17 @@ public class ShortenedUrlController {
                         NanoIdUtils.DEFAULT_NUMBER_GENERATOR,
                         NanoIdUtils.DEFAULT_ALPHABET,
                         size));
-            }while(urlService.existsUrlBySlug(url.getSlug()));
-
-            System.out.println(url);
-            urlService.saveOrUpdateUrl(url);
+            }while(!urlService.saveOrUpdateUrl(url));
         }else{
-            if(urlService.existsUrlBySlug(slug)){
-//                throw new IllegalArgumentException("Specified slug is already in use.");
+            if(!urlService.saveOrUpdateUrl(url)){
                 return new ResponseEntity<>("Specified slug is already in use.", HttpStatus.BAD_REQUEST);
             }
-
-            urlService.saveOrUpdateUrl(url);
         }
 
         return new ResponseEntity<>(url, HttpStatus.CREATED);
     }
 
-    @GetMapping(value = "/urls/{slug}")
+    @GetMapping(value = "/urls/red/{slug}")
     public RedirectView redirectUrl(@PathVariable String slug){
 
         Optional<Url> url = urlService.findBySlug(slug);
@@ -63,7 +56,15 @@ public class ShortenedUrlController {
                 .orElse(new RedirectView("http://localhost:8081"));
     }
 
-    @GetMapping(value = "/urls/abs/{slug}")
+    @GetMapping(value = "/urls")
+    public ResponseEntity<?> getUrls(){
+
+        List<Url> urls = urlService.findAll();
+
+        return ResponseEntity.ok().body(urls);
+    }
+
+    @GetMapping(value = "/urls/{slug}")
     public ResponseEntity<String> getUrl(@PathVariable String slug){
         Optional<Url> url = urlService.findBySlug(slug);
 

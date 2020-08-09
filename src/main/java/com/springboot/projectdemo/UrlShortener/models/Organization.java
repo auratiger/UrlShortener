@@ -15,6 +15,7 @@ public class Organization {
     @Indexed(unique = true)
     private String namespace;
     private String name;
+    private String password;
 
     @Indexed(unique = true)
     private String email;
