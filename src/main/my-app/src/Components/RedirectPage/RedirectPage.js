@@ -7,6 +7,7 @@ import Paper from '@material-ui/core/Paper';
 import Grid from '@material-ui/core/Grid';
 
 import axios from 'axios';
+import parseJwt from '../../jwtParser/jwtParser';
 
 const useStyles = makeStyles((theme) => ({
 
@@ -28,17 +29,27 @@ const RedirectPage = () => {
 
     const handleSubmit = () => {
 
-        if(slug === null || slug.trim.length === 0){
+        if(slug === null || slug.trim().length < 1){
             return;
         }
 
-        axios.get(`http://localhost:8081/urls/`+slug)
+        axios.get(`http://localhost:8081/testJwt/jboxers/pass123`)
             .then(response => {
-                // console.log(response.data);
-                window.location.replace(response.data);
+                console.log(response.data);
+                let a = parseJwt(response.data);
+                console.log(JSON.parse(a.sub));
+                // window.location.replace(response.data);
             }).catch(err => {
                 console.log(err);
             })
+
+        // axios.get('http://localhost:8081/urls/'+slug)
+        //     .then(response => {
+        //         console.log(response.data);
+        //     })
+        //     .catch(err => {
+        //         console.log(err);
+        //     })
     }
 
     return(

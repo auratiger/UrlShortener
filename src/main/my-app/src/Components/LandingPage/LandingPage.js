@@ -8,6 +8,7 @@ import Snackbar from '@material-ui/core/Snackbar';
 import MuiAlert from '@material-ui/lab/Alert';
 
 import axios from 'axios'
+// import { useStore } from '../../hooks-store/store';
 
 const useStyles = makeStyles((theme) => ({
 
@@ -21,6 +22,8 @@ const useStyles = makeStyles((theme) => ({
 const LandingPage = (props) => {
 
   const classes = useStyles();
+
+  // const [state, dispatch] = useStore();
 
   const [slug, setSlug] = useState("");
   const [url, setUrl] = useState("");

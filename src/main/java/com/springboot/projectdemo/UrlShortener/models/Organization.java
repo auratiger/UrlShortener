@@ -1,6 +1,7 @@
 package com.springboot.projectdemo.UrlShortener.models;
 
 import org.springframework.data.annotation.Id;
+import org.springframework.data.annotation.PersistenceConstructor;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
@@ -14,20 +15,31 @@ public class Organization {
 
     @Indexed(unique = true)
     private String namespace;
+
+    @Indexed(unique = true)
     private String name;
-    private String password;
 
     @Indexed(unique = true)
     private String email;
+
+    private String password;
     private long timestamp;
 
-    private List<Url> urls = new ArrayList<>();
+    private List<Url> urls;
 
-    public Organization(String namespace, String name, String email) {
+    public Organization(String email, String password) {
+        this.email = email;
+        this.password = password;
+    }
+
+    @PersistenceConstructor
+    public Organization(String namespace, String name, String email, String password) {
         this.namespace = namespace;
         this.name = name;
         this.email = email;
+        this.password = password;
         this.timestamp = new Date().getTime();
+        this.urls = new ArrayList<>();
     }
 
     public String getId() {
@@ -81,11 +93,13 @@ public class Organization {
         urls.add(url);
     }
 
-//    @Override
-//    public int hashCode() {
-//        return (id + name + namespace + email + timestamp).hashCode();
-//    }
+    public String getPassword() {
+        return password;
+    }
 
+    public void setPassword(String password) {
+        this.password = password;
+    }
 
     @Override
     public boolean equals(Object o) {
@@ -102,6 +116,14 @@ public class Organization {
     @Override
     public int hashCode() {
         return Objects.hash(id, namespace, name, email, timestamp);
+    }
+
+    public String toJson(){
+        return "{ " +
+                "\"name\":\"" + name + '\"' +
+                ", \"email\":\"" + email + '\"' +
+                ", \"namespace\":\"" + namespace + '\"' +
+                " }";
     }
 
     @Override

@@ -81,7 +81,6 @@ public class OrganizationServiceImpl implements OrganizationService {
 
     @Override
     public Optional<Url> findUrlByNamespaceAndSlug(String namespace, String slug) {
-
         List<Organization> results = organizationRepository.findByNamespaceAndUrlsSSlug(namespace, slug);
         Url url = null;
 

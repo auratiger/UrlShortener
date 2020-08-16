@@ -1,5 +1,6 @@
 import React, {useState} from 'react';
 import {withRouter} from 'react-router-dom'
+import axios from 'axios';
 
 import Button from '@material-ui/core/Button';
 import ButtonGroup from '@material-ui/core/ButtonGroup';
@@ -20,6 +21,23 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
+const apiUrl = 'http://localhost:3000';
+
+axios.interceptors.request.use(
+    config => {
+      const { origin } = new URL(config.url);
+      const allowedOrigins = [apiUrl];
+      const token = localStorage.getItem('token');
+      if (allowedOrigins.includes(origin)) {
+        config.headers.authorization = `Bearer ${token}`;
+      }
+      return config;
+    },
+    error => {
+      return Promise.reject(error);
+    }
+  );
+
 const Login = (props) => {
 
     const classes = useStyles();
@@ -27,7 +45,9 @@ const Login = (props) => {
     const [credentials, setCredentials] = useState({
         email: "",
         password: "",
-    })
+    });
+    const storedJwt = localStorage.getItem("token");
+    const [jwt, setJwt] = useState(storedJwt || null);
 
     const handleInputChange = (event) => {
         setCredentials({
@@ -44,7 +64,25 @@ const Login = (props) => {
             password: credentials.password,
         }
 
+        let config = {
+            headers: {
+              "Access-Control-Allow-Credentials": true,
+            }
+          }
+
         // TODO: axios request
+        axios.post("http://localhost:8081/auth/login", user, config)
+            .then(response => {
+                let cookie = response.request.response;
+                console.log(response);
+                console.log(cookie);
+                localStorage.setItem("token", cookie)
+                setJwt(cookie);
+            })
+            .catch(error => {
+                console.log(error);
+            });
+        
     }
 
     return(

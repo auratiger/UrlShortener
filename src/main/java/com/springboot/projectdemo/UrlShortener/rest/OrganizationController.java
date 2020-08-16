@@ -2,36 +2,60 @@ package com.springboot.projectdemo.UrlShortener.rest;
 
 import com.mongodb.BasicDBObject;
 import com.mongodb.client.result.UpdateResult;
+import com.springboot.projectdemo.UrlShortener.models.AuthenticationRequest;
+import com.springboot.projectdemo.UrlShortener.models.AuthenticationResponse;
 import com.springboot.projectdemo.UrlShortener.models.Organization;
 import com.springboot.projectdemo.UrlShortener.models.Url;
+import com.springboot.projectdemo.UrlShortener.service.JwtOrganizationDetailsService;
 import com.springboot.projectdemo.UrlShortener.service.OrganizationService;
+import com.springboot.projectdemo.UrlShortener.util.JwtUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.view.RedirectView;
 
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletResponse;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 
 @RestController
-@CrossOrigin
+@CrossOrigin(allowCredentials = "true")
 public class OrganizationController {
 
-    private final OrganizationService organizationService;
+    @Autowired
+    private OrganizationService organizationService;
+
+    @Autowired
+    private BCryptPasswordEncoder bCryptPasswordEncoder;
 
     @Autowired
     private MongoTemplate mongoTemplate;
 
-    public OrganizationController(OrganizationService organizationService){
-        this.organizationService = organizationService;
-    }
+    @Autowired
+    private AuthenticationManager authenticationManager;
+
+    @Autowired
+    private JwtOrganizationDetailsService organizationDetailsService;
+
+    @Autowired
+    private JwtUtil jwtUtil;
 
     @PostMapping(value = "/auth/signup")
     public ResponseEntity<String> createOrganization(@RequestBody Organization organization){
+        organization.setPassword(bCryptPasswordEncoder.encode(organization.getPassword()));
+
         boolean created = organizationService.saveOrUpdateOrganization(organization);
 
         return created ? ResponseEntity.ok("Organization created") :
@@ -39,12 +63,34 @@ public class OrganizationController {
                         body("Could not create Organization with specified values");
     }
 
-    @PostMapping(value = "/auth/login/{email}/{password}")
-    public ResponseEntity<String> login(){
+    @PostMapping(value = "/auth/login")
+    public ResponseEntity<?> login(@RequestBody AuthenticationRequest request,
+                                   HttpServletResponse response){
 
-        //TODO: Login
+        try{
+            authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(
+                            request.getEmail(),
+                            request.getPassword()
+                    )
+            );
+        }catch (BadCredentialsException e){
+            throw new IllegalArgumentException("Incorrect email of password");
+        }
 
-        return ResponseEntity.ok("");
+        final UserDetails organizationDetails = organizationDetailsService.
+                loadUserByUsername(request.getEmail());
+
+        final String jwt = jwtUtil.generateToken(organizationDetails);
+
+        Cookie cookie = new Cookie("token", jwt);
+        cookie.setMaxAge(24 * 60 * 60);
+        cookie.setSecure(true);
+        cookie.setHttpOnly(true);
+
+//        response.addCookie(cookie);
+
+        return ResponseEntity.ok().build();
     }
 
     @PostMapping(value = "/organization/{namespace}")
@@ -150,6 +196,5 @@ public class OrganizationController {
                 ResponseEntity.ok("Organization Url deleted.") :
                 ResponseEntity.badRequest().body("No such url was found.");
     }
-
 }
 
