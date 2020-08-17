@@ -2,6 +2,11 @@ import React, {useState} from 'react';
 import {withRouter} from 'react-router-dom'
 import axios from 'axios';
 
+import {SET_CURRENT_ORGANIZATION} from '../../../hooks-store/actionTypes';
+import {useStore} from '../../../hooks-store/store';
+import {setAuthToken} from '../../../setAuthToken';
+import parseJwt from './../../../jwtParser/jwtParser';
+
 import Button from '@material-ui/core/Button';
 import ButtonGroup from '@material-ui/core/ButtonGroup';
 import TextField from '@material-ui/core/TextField';
@@ -21,33 +26,16 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-const apiUrl = 'http://localhost:3000';
-
-axios.interceptors.request.use(
-    config => {
-      const { origin } = new URL(config.url);
-      const allowedOrigins = [apiUrl];
-      const token = localStorage.getItem('token');
-      if (allowedOrigins.includes(origin)) {
-        config.headers.authorization = `Bearer ${token}`;
-      }
-      return config;
-    },
-    error => {
-      return Promise.reject(error);
-    }
-  );
-
 const Login = (props) => {
 
     const classes = useStyles();
+
+    const dispatch = useStore()[1];
 
     const [credentials, setCredentials] = useState({
         email: "",
         password: "",
     });
-    const storedJwt = localStorage.getItem("token");
-    const [jwt, setJwt] = useState(storedJwt || null);
 
     const handleInputChange = (event) => {
         setCredentials({
@@ -67,17 +55,19 @@ const Login = (props) => {
         let config = {
             headers: {
               "Access-Control-Allow-Credentials": true,
-            }
+            },
+            credentials: 'include'
           }
 
         // TODO: axios request
         axios.post("http://localhost:8081/auth/login", user, config)
             .then(response => {
-                let cookie = response.request.response;
-                console.log(response);
-                console.log(cookie);
-                localStorage.setItem("token", cookie)
-                setJwt(cookie);
+                const token = response.data;
+                localStorage.setItem("jwtToken", token);
+                setAuthToken(token);
+                const decoded = parseJwt(token);
+                dispatch(SET_CURRENT_ORGANIZATION, decoded);
+                props.history.push("/");
             })
             .catch(error => {
                 console.log(error);

@@ -1,8 +1,7 @@
 import {useState, useEffect} from 'react';
 
 let globalState = {
-    token: null,
-    authenticated: true,
+    isAuthenticated: false,
 };
 let listeners = [];
 let actions = [];

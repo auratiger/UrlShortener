@@ -84,8 +84,8 @@ public class JwtUtil implements Serializable {
         return doGenerateToken(claims, organizationJson);
     }
 
-    public String generateToken(String organizationJson, Map<String, Object> claims){
-        return doGenerateToken(claims, organizationJson);
+    public String generateToken(UserDetails organizationJson, Map<String, Object> claims){
+        return doGenerateToken(claims, organizationJson.getUsername());
     }
 
     private String doGenerateToken(Map<String, Object> claims, String subject) {

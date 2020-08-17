@@ -14,6 +14,7 @@ import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.core.query.Update;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -31,7 +32,7 @@ import java.util.Map;
 import java.util.Optional;
 
 @RestController
-@CrossOrigin(allowCredentials = "true")
+@CrossOrigin
 public class OrganizationController {
 
     @Autowired
@@ -64,8 +65,9 @@ public class OrganizationController {
     }
 
     @PostMapping(value = "/auth/login")
-    public ResponseEntity<?> login(@RequestBody AuthenticationRequest request,
-                                   HttpServletResponse response){
+    public ResponseEntity<?> login(@RequestBody AuthenticationRequest request
+//            , HttpServletResponse response
+    ){
 
         try{
             authenticationManager.authenticate(
@@ -81,16 +83,24 @@ public class OrganizationController {
         final UserDetails organizationDetails = organizationDetailsService.
                 loadUserByUsername(request.getEmail());
 
-        final String jwt = jwtUtil.generateToken(organizationDetails);
+        Optional<Organization> optionalOrganization =
+                organizationService.findByEmail(request.getEmail());
 
-        Cookie cookie = new Cookie("token", jwt);
-        cookie.setMaxAge(24 * 60 * 60);
-        cookie.setSecure(true);
-        cookie.setHttpOnly(true);
+        Map<String, Object> claims = new HashMap<>();
+        optionalOrganization.map(
+                organization -> claims.put("obj", organization.toJson())
+        );
+        final String jwt = jwtUtil.generateToken(organizationDetails, claims);
+
+//        Cookie cookie = new Cookie("token", jwt);
+//        cookie.setMaxAge(24 * 60 * 60);
+//        cookie.setSecure(true);
+//        cookie.setHttpOnly(true);
 
 //        response.addCookie(cookie);
 
-        return ResponseEntity.ok().build();
+//        return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE, cookie.toString()).build();
+        return ResponseEntity.ok().body(jwt);
     }
 
     @PostMapping(value = "/organization/{namespace}")

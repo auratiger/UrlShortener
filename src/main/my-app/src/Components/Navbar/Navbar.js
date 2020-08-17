@@ -1,5 +1,7 @@
 import React from 'react';
 import { withRouter } from "react-router-dom";
+import {useStore} from '../../hooks-store/store';
+import {LOGOUT_ORGANIZATION} from '../../hooks-store/actionTypes';
 
 import { makeStyles } from '@material-ui/core/styles';
 import AppBar from '@material-ui/core/AppBar';
@@ -21,6 +23,15 @@ const useStyles = makeStyles((theme) => ({
 
 const ButtonAppBar = (props) => {
   const classes = useStyles();
+  const [state, dispatch] = useStore();
+
+  const renderAuthComponents = () => {
+    return(
+      <div>
+        
+      </div>
+    )
+  };
 
   return (
     <div className={classes.root}>
@@ -42,8 +53,10 @@ const ButtonAppBar = (props) => {
                 <Button className={classes.menuButton} 
                         color="secondary" 
                         variant="contained"
-                        onClick={() => {props.history.push("/auth/login")}}>
-                            Login
+                        onClick={() => {state.isAuthenticated ? 
+                                        dispatch(LOGOUT_ORGANIZATION) : 
+                                        props.history.push("/auth/login")}}>
+                            {state.isAuthenticated ? "Logout" : "Login"}
                 </Button>
             </Toolbar>
         </AppBar>
