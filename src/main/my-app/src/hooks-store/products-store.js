@@ -17,7 +17,6 @@ const configureStore = () => {
         },
         LOGOUT_ORGANIZATION: (curState) => {
             localStorage.removeItem("jwtToken");
-            console.log("dsad");
             return{
                 ...curState,
                 "isAuthenticated": false,

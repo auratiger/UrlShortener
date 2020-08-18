@@ -28,7 +28,13 @@ const ButtonAppBar = (props) => {
   const renderAuthComponents = () => {
     return(
       <div>
-        
+          <Button className={classes.menuButton} 
+                        color="secondary" 
+                        variant="contained"
+                        size="medium"
+                        onClick={() => {props.history.push("/organization/profile")}}>
+                            {state.name}
+          </Button>
       </div>
     )
   };
@@ -39,6 +45,7 @@ const ButtonAppBar = (props) => {
             <Toolbar>
                 <Typography variant="h6" 
                             className={classes.title}
+                            size="small"
                             onClick={() => props.history.push("/")}>
                     Url shortener
                 </Typography>
@@ -46,13 +53,25 @@ const ButtonAppBar = (props) => {
                 <Button className={classes.menuButton} 
                         color="secondary" 
                         variant="contained"
-                        onClick={() => {props.history.push("/redirectPage")}}>
-                            Redirect me
+                        size="small"
+                        onClick={() => {props.history.push("/")}}>
+                            Urls
                 </Button>
 
                 <Button className={classes.menuButton} 
                         color="secondary" 
                         variant="contained"
+                        size="small"
+                        onClick={() => {props.history.push("/redirectPage")}}>
+                            Redirections
+                </Button>
+                
+                {state.isAuthenticated ? renderAuthComponents() : null}
+
+                <Button className={classes.menuButton} 
+                        color="secondary" 
+                        variant="contained"
+                        size="large"
                         onClick={() => {state.isAuthenticated ? 
                                         dispatch(LOGOUT_ORGANIZATION) : 
                                         props.history.push("/auth/login")}}>

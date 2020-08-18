@@ -49,7 +49,7 @@ public class JwtRequestFilter extends OncePerRequestFilter {
         final String requestTokenHeader = request.getHeader(tokenHeader);
 
         String email = null;
-        String jwtToken = null;
+        String jwtToken;
 
         if(requestTokenHeader != null && requestTokenHeader.startsWith("Bearer ")){
             jwtToken = requestTokenHeader.substring(7);

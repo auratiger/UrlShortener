@@ -27,12 +27,6 @@ public class Organization {
 
     private List<Url> urls;
 
-    public Organization(String email, String password) {
-        this.email = email;
-        this.password = password;
-    }
-
-    @PersistenceConstructor
     public Organization(String namespace, String name, String email, String password) {
         this.namespace = namespace;
         this.name = name;

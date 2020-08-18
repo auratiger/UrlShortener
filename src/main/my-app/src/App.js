@@ -14,6 +14,8 @@ import LandingPage from './Components/LandingPage/LandingPage';
 import SignUp from './Components/Auth/SignUp/SignUp';
 import Login from './Components/Auth/Login/Login';
 import RedirectPage from './Components/RedirectPage/RedirectPage';
+import ProfilePage from './Components/ProfilePage/ProfilePage';
+import RedirectionList from './Components/RedirectionList/RedirectionList';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -46,6 +48,7 @@ const App = (props) => {
         <Route path="/auth/login" component={Login}></Route>
         <Route path="/auth/signup" component={SignUp}></Route>
         <Route path="/landingPage" component={LandingPage}></Route>
+        <Route path="/redirectPage/list" component={RedirectionList}></Route>
         <Route path="/redirectPage" component={RedirectPage}></Route>
         <Route path="/" component={LandingPage}></Route>
       </Switch>
@@ -56,6 +59,8 @@ const App = (props) => {
     return(
       <Switch>
         <Route path="/landingPage" component={LandingPage}></Route>
+        <Route path="/organization/profile" component={ProfilePage}></Route>
+        <Route path="/redirectPage/list" component={RedirectionList}></Route>
         <Route path="/redirectPage" component={RedirectPage}></Route>
         <Route path="/" component={LandingPage}></Route>
       </Switch>

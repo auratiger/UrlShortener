@@ -31,7 +31,6 @@ const SignUp = (props) => {
         confirm  : {text: "", valid: false},
     });
 
-    const [redirect, setRedirect] = useState(false);
     const classes = useStyles();
 
     const setupUser = () => {
@@ -92,16 +91,15 @@ const SignUp = (props) => {
             password: user.password.text,
         };   
         
-        // axios.post('http://localhost:8081/auth/signup', obj)
-        // .then((response) => {
-        //   console.log(response.data);  
-        //   props.history.push("/");
-        // }).catch((err) => {
-        //   console.log(err);
-        // });
+        axios.post('http://localhost:8081/auth/signup', obj)
+        .then((response) => {
+          console.log(response.data);  
+          props.history.push("/urls");
+        }).catch((err) => {
+          console.log(err);
+        });
 
         setupUser();
-        setRedirect(false);
     }
     
     return(
