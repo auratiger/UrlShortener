@@ -54,17 +54,20 @@ const LandingPage = (props) => {
       "url": url
     }
 
+    setResponse("");
     setResponseError(null);
 
-    axios.post('http://localhost:8081/urls', obj)
+    axios.post(organizationTab ? 
+              'http://localhost:8081/organization/' + state.namespace : 
+              'http://localhost:8081/urls', obj)
       .then((response) => {
-        // console.log(response.data);
+        console.log(response.data);
 
         let text = `Slug : ${response.data.slug} \nUrl : ${response.data.url}`;
 
         setResponse(text);
       }).catch((err) => {
-        console.log(err);
+        console.log(err.response);
         setResponseError(err.response);
         setResponse(err.response.data);
       });

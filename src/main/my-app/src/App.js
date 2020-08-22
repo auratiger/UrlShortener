@@ -2,7 +2,7 @@ import React, {useEffect} from 'react';
 import {Route, Switch} from 'react-router-dom'; 
 
 import {useStore} from './hooks-store/store';
-import {SET_CURRENT_ORGANIZATION} from './hooks-store/actionTypes';
+import {SET_CURRENT_ORGANIZATION, LOGOUT_ORGANIZATION} from './hooks-store/actionTypes';
 import parseJwt from './jwtParser/jwtParser';
 import {setAuthToken} from './setAuthToken';
 
@@ -19,7 +19,8 @@ import RedirectionList from './Components/RedirectionList/RedirectionList';
 
 const useStyles = makeStyles((theme) => ({
   root: {
-    flexGrow: 1
+    flexGrow: 1,
+    height: "100vh"
   },
 }));
 
@@ -38,6 +39,7 @@ const App = (props) => {
       const currentTime = Date.now() / 1000;
       if(decoded.exp < currentTime) {
         //logout
+        dispatch(LOGOUT_ORGANIZATION);
       }
     }
   }, []);
@@ -60,6 +62,8 @@ const App = (props) => {
       <Switch>
         <Route path="/landingPage" component={LandingPage}></Route>
         <Route path="/organization/profile" component={ProfilePage}></Route>
+        <Route path="/redirectPage/organization/list" render={(props) => (
+                <RedirectionList {...props} organizationTab={true} />)}></Route>
         <Route path="/redirectPage/list" component={RedirectionList}></Route>
         <Route path="/redirectPage" component={RedirectPage}></Route>
         <Route path="/" component={LandingPage}></Route>

@@ -41,7 +41,7 @@ const ButtonAppBar = (props) => {
 
   return (
     <div className={classes.root}>
-        <AppBar position="static">
+        <AppBar id="appbar" position="static">
             <Toolbar>
                 <Typography variant="h6" 
                             className={classes.title}

@@ -1,4 +1,5 @@
 import React, {useState, useEffect} from 'react';
+import {useStore} from '../../hooks-store/store';
 
 import { makeStyles } from '@material-ui/core/styles';
 import Paper from '@material-ui/core/Paper';
@@ -15,10 +16,10 @@ import axios from 'axios';
 const useStyles = makeStyles({
     root: {
         margin: "auto",
-        width: '65%',
+        width: '80%',
     },
     container: {
-      maxHeight: "100%",
+        maxHeight: "calc(100vh - 117px)"
     },
 });
 
@@ -27,14 +28,15 @@ const RedirectionList = (props) => {
     const [page, setPage] = useState(0);
     const [rowsPerPage, setRowsPerPage] = useState(14);
     const [loaded, setLoaded] = useState();
+    const state = useStore()[0];
 
     const columns = useState([
         { id: 'slug', label: 'Slug', minWidth: 170 },
-        { id: 'url', label: 'Url', minWidth: 100 },
+        { id: 'url', label: 'Url', minWidth: 100, align: "left"},
         {
           id: 'date',
           label: 'Created',
-          minWidth: 50,
+          minWidth: 100,
           align: 'right',
           format: (value) => value.to('en-US'),
         }
@@ -42,7 +44,8 @@ const RedirectionList = (props) => {
     const [rows, setRows] = useState([]);
 
     useEffect(() => {
-        axios.get("http://localhost:8081/urls")
+        console.log(props.organizationTab);
+        axios.get(props.organizationTab ? "http://localhost:8081/organization/"+state.namespace : "http://localhost:8081/urls")
             .then((response) => {
                 console.log(response.data);
                 let obj = [];
@@ -74,7 +77,7 @@ const RedirectionList = (props) => {
                             <TableCell
                                 key={column.id}
                                 align={column.align}
-                                style={{ minWidth: column.minWidth }}
+                                style={{ minWidth: column.minWidth, maxWidth: column.maxWidth }}
                             >
                                 {column.label}
                             </TableCell>
@@ -82,20 +85,20 @@ const RedirectionList = (props) => {
                         </TableRow>
                     </TableHead>
                     <TableBody>
-                    {rows.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row) => {
-                        return (
-                        <TableRow hover role="checkbox" tabIndex={-1} key={row.id}>
-                            {columns.map((column) => {
-                            const value = row[column.id];
+                        {rows.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row) => {
                             return (
-                                <TableCell key={column.id} align={column.align}>
-                                {column.format && typeof value === 'number' ? column.format(value) : value}
-                                </TableCell>
+                            <TableRow hover role="checkbox" tabIndex={-1} key={row.id}>
+                                {columns.map((column) => {
+                                const value = row[column.id];
+                                return (
+                                    <TableCell key={column.id} align={column.align}>
+                                    {column.format && typeof value === 'number' ? column.format(value) : value}
+                                    </TableCell>
+                                );
+                                })}
+                            </TableRow>
                             );
-                            })}
-                        </TableRow>
-                        );
-                    })}
+                        })}
                     </TableBody>
                 </Table>
             </TableContainer>

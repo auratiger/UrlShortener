@@ -49,7 +49,9 @@ const RedirectPage = (props) => {
             return;
         }
 
-        axios.get('http://localhost:8081/urls/'+slug)
+        let url = organizationTab ? "http://localhost:8081/organization/" : "http://localhost:8081/urls/";
+
+        axios.get(url+slug)
             .then(response => {
                 console.log(response.data);
                 window.location.href = response.data;
@@ -91,11 +93,12 @@ const RedirectPage = (props) => {
                         <Button variant="outlined" 
                                 color="primary" 
                                 size='medium' 
-                                onClick={() => props.history.push("redirectPage/list")}>
+                                onClick={() => organizationTab ? 
+                                    props.history.push("redirectPage/organization/list") :
+                                    props.history.push("redirectPage/list")}>
                             List all
                         </Button> 
                     </div>
-
                 </form>
             </Paper>
         </Grid>
