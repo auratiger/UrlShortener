@@ -14,18 +14,21 @@ import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.NoOpPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.access.channel.ChannelProcessingFilter;
-import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.authentication.*;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
-import org.springframework.web.filter.CorsFilter;
 
-import java.util.Arrays;
-
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 
 @Configuration
 @EnableWebSecurity
@@ -40,6 +43,9 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Autowired
     private JwtRequestFilter jwtRequestFilter;
+
+    @Autowired
+    private CorsFilter corsFilter;
 
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
@@ -58,52 +64,60 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         return super.authenticationManagerBean();
     }
 
-//    public void addCorsMappings(CorsRegistry registry) {
-//        registry.addMapping("/**").allowedOrigins("*")
-//                .allowedMethods("HEAD", "GET", "PUT", "POST",
-//                        "DELETE", "PATCH").allowedHeaders("*");
+//    @Bean
+//    public CorsConfigurationSource corsConfigurationSource() {
+//        CorsConfiguration configuration = new CorsConfiguration();
+//        configuration.setAllowedOrigins(Arrays.asList("*"));
+//        configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
+//        configuration.setAllowedHeaders(Arrays.asList("authorization", "content-type", "x-auth-token"));
+//        configuration.setExposedHeaders(Arrays.asList("x-auth-token"));
+//        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+//        source.registerCorsConfiguration("/**", configuration);
+//        return source;
 //    }
-
-    @Bean
-    CorsConfigurationSource corsConfigurationSource() {
-        CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(Arrays.asList("*"));
-        configuration.setAllowCredentials(true);
-        configuration.setAllowedHeaders(Arrays.asList(
-                "Access-Control-Allow-Headers",
-                "Access-Control-Allow-Origin",
-                "Access-Control-Request-Method",
-                "Access-Control-Request-Headers",
-                "Origin",
-                "Cache-Control",
-                "Content-Type",
-                "Authorization"));
-        configuration.setAllowedMethods(Arrays.asList("DELETE", "GET", "POST", "PATCH", "PUT"));
-        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        source.registerCorsConfiguration("/**", configuration);
-        return source;
-    }
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http.
-                cors().and().
                 csrf().disable().
                 authorizeRequests().
+                antMatchers("/auth/**", "/urls/**").permitAll().
                 antMatchers("/organization/**").authenticated().
-                antMatchers(HttpMethod.POST, "/auth/**", "/urls/**").permitAll().
                 anyRequest().authenticated().
                 and().exceptionHandling().
                 authenticationEntryPoint(jwtAuthenticationEntryPoint).
                 and().formLogin().
+                failureHandler(failureHandler()).
+                successHandler(successHandler()).
                 and().sessionManagement().
                 sessionCreationPolicy(SessionCreationPolicy.STATELESS);
 
+        http.addFilterBefore(corsFilter, ChannelProcessingFilter.class);
         http.addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class);
     }
 
     @Override
     public void configure(WebSecurity web) throws Exception {
         web.ignoring().antMatchers("/**");
+    }
+
+    private AuthenticationFailureHandler failureHandler() {
+        return new SimpleUrlAuthenticationFailureHandler() {
+            public void onAuthenticationFailure(HttpServletRequest request,
+                                                HttpServletResponse response, AuthenticationException exception)
+                    throws IOException, ServletException {
+                response.setContentType("text/html;charset=UTF-8");
+                response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Authentication Failed. Wrong username or password or both");
+            }
+        };
+    }
+
+    private AuthenticationSuccessHandler successHandler() {
+        return new SimpleUrlAuthenticationSuccessHandler() {
+            public void onAuthenticationSuccess(HttpServletRequest request,
+                                                HttpServletResponse response, Authentication authentication)
+                    throws IOException, ServletException {
+            }
+        };
     }
 }

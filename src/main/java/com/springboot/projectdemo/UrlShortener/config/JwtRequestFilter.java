@@ -20,6 +20,8 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.Enumeration;
+import java.util.List;
 
 @Component
 @PropertySource("classpath:authentication.properties")
@@ -49,7 +51,7 @@ public class JwtRequestFilter extends OncePerRequestFilter {
         final String requestTokenHeader = request.getHeader(tokenHeader);
 
         String email = null;
-        String jwtToken;
+        String jwtToken = null;
 
         if(requestTokenHeader != null && requestTokenHeader.startsWith("Bearer ")){
             jwtToken = requestTokenHeader.substring(7);

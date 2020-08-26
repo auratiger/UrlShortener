@@ -1,4 +1,5 @@
 import React, {useState} from 'react';
+import useForm from '../../../hooks/useForm';
 import { withRouter } from "react-router-dom";
 
 import TextField from '@material-ui/core/TextField';
@@ -22,25 +23,28 @@ const useStyles = makeStyles((theme) => ({
     },
   }));
 
+const initialState = {
+    name : "",
+    email    : "",
+    password : "",
+    confirm  : "",
+}
+
+const validationState = {
+    name : false,
+    email    : false,
+    password : false,
+    confirm  : false,
+}
+
 const SignUp = (props) => {
 
-    const [user, setUser] = useState({
-        organizationName : {text: "", valid: false},
-        email    : {text: "", valid: false},
-        password : {text: "", valid: false},
-        confirm  : {text: "", valid: false},
-    });
+    const [credentials, handleChange, setCredentials] = useForm(initialState);
+    const [areValid, setAreValid] = useState(validationState);
+
+    console.log(credentials);
 
     const classes = useStyles();
-
-    const setupUser = () => {
-        setUser({
-            organizationName : {text: "", valid: false},
-            email    : {text: "", valid: false},
-            password : {text: "", valid: false},
-            confirm  : {text: "", valid: false},
-        })
-    }
 
     const messagesValidateHandler = (event) => {
         const name = event.target.name;
@@ -54,7 +58,7 @@ const SignUp = (props) => {
                 valid = patt.test(text);     
                 break;
             case "confirm":
-                if(text === user.password.text){
+                if(text === credentials.password){
                     valid = true;
                 }
                 break;
@@ -63,10 +67,12 @@ const SignUp = (props) => {
                 valid = patt.test(text);
         }
 
-        setUser({
-            ...user,
-            [name]: {"text": text, "valid": valid},
-        })
+        setAreValid({
+            ...areValid,
+            [name]: valid
+        });
+
+        handleChange(event);
     }
 
     const handleSubmit = (event) => {   
@@ -77,8 +83,8 @@ const SignUp = (props) => {
 
         let valid = true;
 
-        Object.values(user).forEach(item => {
-            if(!item.valid){
+        Object.values(areValid).forEach(item => {
+            if(!item){
                 valid = false;
             }
         })
@@ -86,9 +92,9 @@ const SignUp = (props) => {
         if(!valid) return;
 
         const obj = {
-            organizationName: user.organizationName.text,
-            email: user.email.text,
-            password: user.password.text,
+            name: credentials.name,
+            email: credentials.email,
+            password: credentials.password,
         };   
         
         axios.post('http://localhost:8081/auth/signup', obj)
@@ -99,7 +105,7 @@ const SignUp = (props) => {
           console.log(err);
         });
 
-        setupUser();
+        setCredentials(initialState);
     }
     
     return(
@@ -109,56 +115,56 @@ const SignUp = (props) => {
                 <Grid container spacing={1}>
                     <Grid item xs={12}>
                         <TextField 
-                            error={!user.organizationName.valid}
+                            error={!areValid.name}
                             fullWidth
-                            id="organizationName" 
+                            id="name" 
                             label="Organization Name*"
-                            name="organizationName"
+                            name="name"
                             variant="outlined"
-                            helperText={user.organizationName.valid ? "" : "limit up to 20 characters"}
-                            value={user.organizationName.text}
+                            helperText={areValid.name ? "" : "limit up to 20 characters"}
+                            value={credentials.name}
                             onChange={messagesValidateHandler}/>   
                     </Grid>
 
                     <Grid item xs={12}>
                         <TextField 
-                            error={!user.email.valid}
+                            error={!areValid.email}
                             fullWidth
                             id="email" 
                             label="Email*"
                             name="email"
                             type="email"
                             variant="outlined"
-                            helperText={user.email.valid ? "" : "email is not valid"}
-                            value={user.email.text}
+                            helperText={areValid.email ? "" : "email is not valid"}
+                            value={credentials.email}
                             onChange={messagesValidateHandler}/>    
                     </Grid>
 
                     <Grid item xs={6}>
                         <TextField 
-                            error={!user.password.valid}
+                            error={!areValid.password}
                             fullWidth
                             id="password" 
                             label="Password*"
                             name="password"
                             type="password"
                             variant="outlined"
-                            helperText={user.password.valid ? "" : "limit up to 20 characters"}
-                            value={user.password.text}
+                            helperText={areValid.password ? "" : "limit up to 20 characters"}
+                            value={credentials.password}
                             onChange={messagesValidateHandler}/>    
                     </Grid>
 
                     <Grid item xs={6}>
                         <TextField 
-                            error={!user.confirm.valid}
+                            error={!areValid.confirm}
                             fullWidth
                             id="confpassword" 
                             label="Confirm password*"
                             name="confirm"
                             type="password"
                             variant="outlined"
-                            helperText={user.confirm.valid ? "" : "limit up to 20 characters"}
-                            value={user.confirm.text}
+                            helperText={areValid.confirm ? "" : "limit up to 20 characters"}
+                            value={credentials.confirm}
                             onChange={messagesValidateHandler}/>   
                     </Grid>
                 </Grid> 

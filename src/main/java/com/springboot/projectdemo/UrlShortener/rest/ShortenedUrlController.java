@@ -12,7 +12,6 @@ import java.util.List;
 import java.util.Optional;
 
 @RestController
-@CrossOrigin
 public class ShortenedUrlController {
 
     private final UrlService urlService;

@@ -32,7 +32,6 @@ import java.util.Map;
 import java.util.Optional;
 
 @RestController
-@CrossOrigin
 public class OrganizationController {
 
     @Autowired
@@ -114,7 +113,7 @@ public class OrganizationController {
             organization.addUrl(url);
 
             organizationService.saveOrUpdateOrganization(organization);
-            return ResponseEntity.ok().body(organization);
+            return ResponseEntity.ok().body(url);
         }else{
             return ResponseEntity.badRequest().body("Namespace " + namespace + " does not exist.");
         }

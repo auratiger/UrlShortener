@@ -1,4 +1,5 @@
 import React, {useState} from 'react';
+import useForm from '../../../hooks/useForm';
 import {withRouter} from 'react-router-dom'
 import axios from 'axios';
 
@@ -32,17 +33,10 @@ const Login = (props) => {
 
     const dispatch = useStore()[1];
 
-    const [credentials, setCredentials] = useState({
+    const [credentials, handleChange] = useForm({
         email: "",
         password: "",
-    });
-
-    const handleInputChange = (event) => {
-        setCredentials({
-            ...credentials,
-            [event.target.name]: event.target.value
-        })
-    }
+    })
 
     const handleSubmit = (event) => {
         event.preventDefault();
@@ -89,7 +83,7 @@ const Login = (props) => {
                             type="email"
                             variant="outlined"
                             value={credentials.email}
-                            onChange={handleInputChange}/> 
+                            onChange={handleChange}/> 
                     </Grid>
 
                     <Grid item xs={12}>
@@ -101,7 +95,7 @@ const Login = (props) => {
                             type="password"
                             variant="outlined"
                             value={credentials.password}
-                            onChange={handleInputChange}/>  
+                            onChange={handleChange}/>  
                     </Grid>
                 </Grid>
 
