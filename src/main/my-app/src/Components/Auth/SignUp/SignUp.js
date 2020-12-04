@@ -24,14 +24,14 @@ const useStyles = makeStyles((theme) => ({
   }));
 
 const initialState = {
-    name : "",
+    name     : "",
     email    : "",
     password : "",
     confirm  : "",
 }
 
 const validationState = {
-    name : false,
+    name     : false,
     email    : false,
     password : false,
     confirm  : false,
@@ -41,8 +41,6 @@ const SignUp = (props) => {
 
     const [credentials, handleChange, setCredentials] = useForm(initialState);
     const [areValid, setAreValid] = useState(validationState);
-
-    console.log(credentials);
 
     const classes = useStyles();
 

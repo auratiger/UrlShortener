@@ -47,6 +47,9 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     @Autowired
     private CorsFilter corsFilter;
 
+    @Autowired
+    private ExceptionHandlerFilter exceptionHandlerFilter;
+
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
         auth.userDetailsService(jwtOrganizationDetailsService).passwordEncoder(passwordEncoder());
@@ -92,6 +95,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 and().sessionManagement().
                 sessionCreationPolicy(SessionCreationPolicy.STATELESS);
 
+        http.addFilterBefore(exceptionHandlerFilter, ChannelProcessingFilter.class);
         http.addFilterBefore(corsFilter, ChannelProcessingFilter.class);
         http.addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class);
     }

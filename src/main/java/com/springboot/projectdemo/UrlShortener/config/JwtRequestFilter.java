@@ -20,8 +20,6 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.Enumeration;
-import java.util.List;
 
 @Component
 @PropertySource("classpath:authentication.properties")
@@ -65,8 +63,7 @@ public class JwtRequestFilter extends OncePerRequestFilter {
             }
         }else{
             System.out.println("JWT Token does not begin with Bearer String");
-//            response.setStatus(401);
-            throw new IllegalArgumentException();
+            throw new MissingBearerTokenException("Missing Bearer token");
         }
 
         if(email != null && SecurityContextHolder.getContext().getAuthentication() == null){

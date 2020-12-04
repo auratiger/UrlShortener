@@ -30,40 +30,14 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 @WebMvcTest(ShortenedUrlController.class)
 class ShortenedUrlControllerTest {
 
+	@Autowired
 	private MockMvc mockMvc;
-
-    @MockBean
-	private ShortenedUrlController shortenedUrlController;
-
-	@BeforeEach
-	public void init(){
-		mockMvc = MockMvcBuilders.standaloneSetup(shortenedUrlController).build();
-	}
 
 	@Test
 	public void shouldCreateProduct() throws Exception{
-		String uri = "/url";
-		Url url = new Url("test", "https://www.tutorialspoint.com/spring_boot/spring_boot_rest_controller_unit_test.htm");
-
-		mockMvc.perform(post(uri)
-						.contentType(MediaType.APPLICATION_JSON)
-						.content(url.toString()))
-				.andDo(print())
-				.andExpect(status().isOk());
-
-	}
-
-	@Test
-	void hello() throws Exception {
-		mockMvc.perform(
-						get("/hello")
-						.contentType(MediaType.APPLICATION_JSON)
-						.characterEncoding("utf-8")
-				)
-				.andDo(print());
-//				.andExpect(status().isOk())
-//				.andReturn();
-
+		RequestBuilder requst = MockMvcRequestBuilders.get("/urls");
+		MvcResult result = mockMvc.perform(requst).andReturn();
+		System.out.println(result);
 
 	}
 
